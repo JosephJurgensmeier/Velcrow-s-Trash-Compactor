@@ -10,11 +10,15 @@ struct node
 {
 	struct path path1;
 	struct path path2;
-	int distance = 0;
-	int explorationFlag = -1;
+	int distance ;
+	int explorationFlag  ;
+	int parent ;
 };
 
-void setNodeExplorationFlag(int nodeID, int flagState)
+// GLOBAL VARIABLES //
+struct node NODE_LIST[100];
+
+void setNodeExplorationFlag(int nodeID, int flagState)//sets flag on node
 {
 	NODE_LIST[nodeID].explorationFlag = flagState;
 }
@@ -28,7 +32,8 @@ int findNearest() //function finds nearest node and returns its ID
 {
 	int nearestNode = 0;
 	int shortestDistance = 0;
-	for (int i = 1, i <= NODE_COUNT, i++)
+	int i;
+	for ( i = 1; i <= NODE_COUNT; i++)
 	{
 		if (NODE_LIST[i].explorationFlag == 0 && (NODE_LIST[i].distance <  shortestDistance || nearestNode == 0))
 		{
@@ -39,22 +44,43 @@ int findNearest() //function finds nearest node and returns its ID
 	return nearestNode;
 }
 
-void findChildren(int nearest)
+void findChildren(int nearest) //adds child nodes to unexplored list
 {
-	int childNode = NODE_LIST[nearest].path1.destination;///////////////////////////////////////////////////
-	if (childNode.explorationFlag == 1)
+	int childNode = NODE_LIST[nearest].path1.destination;
+	int pathDistance = NODE_LIST[nearest].path1.distance;
+	for (int i = 0; i < 2; i++)
 	{
-		//Do nothing
-	}
-	else if (NODE_LIST[childNode].explorationFlag == 0)
-	{
-		if (NODE_LIST[childNode].distance > NODE_LIST[nearest].distance + NODE_LIST[childNode].path1.distance)
+		if (NODE_LIST[childNode].explorationFlag == 1)//explored
+		{
+			//Do nothing
+		}
+		else if (NODE_LIST[childNode].explorationFlag == 0)//unexplored
+		{
+			if (NODE_LIST[childNode].distance > NODE_LIST[nearest].distance + pathDistance)
+			{
+				setNodeDistance (childNode, NODE_LIST[nearest].distance + pathDistance);
+				NODE_LIST[childNode].parent = nearest;
+			}
+		}
+		else//unknown
+		{
+			setNodeExplorationFlag(childNode, 0);
+			setNodeDistance (childNode, NODE_LIST[nearest].distance + pathDistance);
+			NODE_LIST[childNode].parent = nearest;
+		}
+
+		if (NODE_LIST[nearest].path1 != NODE_LIST[nearest].path2)
+		{
+			childNode = NODE_LIST[nearest].path2.destination;
+			pathDistance = NODE_LIST[nearest].path2.distance;
+		}
+		else
+		{
+			return;
+		}
 	}
 }
 
-
-// GLOBAL VARIABLES //
-struct node NODE_LIST[100];
 
 
 void addPath(int source, int destination, int distance) //Function that creates paths between nodes
@@ -131,7 +157,6 @@ void makeMap()
 	addPath(35,29,111);//
 	addPath(36,35,64);
 	addPath(36,45,43);
-
 	addPath(37,36,53);
 	addPath(38,24,54);
 	addPath(38,33,62);
@@ -193,36 +218,78 @@ void makeMap()
 	addPath(72,73,53);
 	addPath(73,59,44);
 
-	}
+}
 
 void findRoute(int startNode,int endNode)
 {
 	// initialize unexplored list with start node
-		// initialize flag to unknown
-				for(i = 1; i <= NODE_COUNT; i++)
-				{
-					setNodeExplorationFlag(i, -1);
-				}
+	// initialize flag to unknown
+	int i;
+	for(i = 1; i <= NODE_COUNT; i++)
+	{
+		setNodeDistance(i,15000);
+		setNodeExplorationFlag(i, -1);
+		NODE_LIST[i].parent = 0;
+	}
 
+	setNodeExplorationFlag(startNode, 0);// sets start node to unexplored
+	setNodeDistance(startNode, 0);
 
-	// find nearest unexplored node
+	int debugCount = 0; // count number of nodes explored
+	while (true)
+	{
+		debugCount++;
+		// find nearest unexplored node
 		// use list of distances from start to each node to compare and find nearest
-				int nearest = findNearest();
-				if (nearest == endNode)
-				{
-						// if it is the end node, then SUCCESS!
+		int nearest = findNearest();
+		if (nearest == 0)
+		{
+			//find nearest fouldn't find nearest
+			writeDebugStreamLine("dang it! (%d nodes explored)",debugCount);
+			return;
+		}
+		if (nearest == endNode)
+		{
+			// if it is the end node, then SUCCESS!
+			writeDebugStreamLine("success");
+			return;
+		}
 
-				}
 
+		// add its child nodes to the unexplored list, if they are already there, then update their distances if shorter
 
-	// add its child nodes to the unexplored list, if they are already there, then update their distances if shorter
+		findChildren(nearest);
+		setNodeExplorationFlag(nearest, 1);// removes node from unexplored list
 
-				findChildren(nearest);
-
+	}
 }
 
+void debugPrintRoute(int endNode)
+{
+	int current = endNode;
+	int nodeList[NODE_COUNT];
+	int i;
+	for (i = 0; current != 0; i++)
+	{
+		nodeList[i] = current;
+		current = NODE_LIST[current].parent;
+	}
+
+	for(i--;i > 0; i--)
+	{
+		writeDebugStreamLine("go from node %d to node %d", nodeList[i],nodeList[i-1]);
+
+	}
+	writeDebugStreamLine("done");
+	for(i=0; i < NODE_COUNT; i++)
+	{
+		writeDebugStreamLine("Distance of node %d is %d",i,NODE_LIST[i].distance);
+	}
+}
 
 task main()
 {
 	makeMap();
+	findRoute (1, 10);
+	debugPrintRoute(10);
 }
