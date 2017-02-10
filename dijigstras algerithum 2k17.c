@@ -3,14 +3,15 @@ const int NODE_COUNT = 74;
 struct path
 {
 	int destination;
-	int distance;
+	int pathDistanceVar;
+	int pathDirectionVar ;// -1 is a left turn. 0 is straight. +1 is a right turn.
 };
 
 struct node
 {
 	struct path path1;
 	struct path path2;
-	int distance ;
+	int totalDistance ;
 	int explorationFlag  ;
 	int parent ;
 };
@@ -25,7 +26,8 @@ void setNodeExplorationFlag(int nodeID, int flagState)//sets flag on node
 
 void setNodeDistance(int nodeID, int distance)
 {
-	NODE_LIST[nodeID].distance = distance;
+	NODE_LIST[nodeID].totalDistance = distance;
+	//writeDebugStreamLine("Set node %d distance to %d: (%d)",nodeID,distance,NODE_LIST[nodeID].totalDistance);
 }
 
 int findNearest() //function finds nearest node and returns its ID
@@ -35,9 +37,9 @@ int findNearest() //function finds nearest node and returns its ID
 	int i;
 	for ( i = 1; i <= NODE_COUNT; i++)
 	{
-		if (NODE_LIST[i].explorationFlag == 0 && (NODE_LIST[i].distance <  shortestDistance || nearestNode == 0))
+		if (NODE_LIST[i].explorationFlag == 0 && (NODE_LIST[i].totalDistance <  shortestDistance || nearestNode == 0))
 		{
-			shortestDistance = NODE_LIST[i].distance;
+			shortestDistance = NODE_LIST[i].totalDistance;
 			nearestNode = i;
 		}
 	}
@@ -47,34 +49,42 @@ int findNearest() //function finds nearest node and returns its ID
 void findChildren(int nearest) //adds child nodes to unexplored list
 {
 	int childNode = NODE_LIST[nearest].path1.destination;
-	int pathDistance = NODE_LIST[nearest].path1.distance;
-	for (int i = 0; i < 2; i++)
+	int pathDistance = NODE_LIST[nearest].path1.pathDistanceVar;
+	for(int i = 0; i < 2; i++) // loop twice
 	{
-		if (NODE_LIST[childNode].explorationFlag == 1)//explored
+		if(NODE_LIST[childNode].explorationFlag == 1)//explored
 		{
 			//Do nothing
 		}
-		else if (NODE_LIST[childNode].explorationFlag == 0)//unexplored
+		else if(NODE_LIST[childNode].explorationFlag == 0)//unexplored
 		{
-			if (NODE_LIST[childNode].distance > NODE_LIST[nearest].distance + pathDistance)
+			if(NODE_LIST[childNode].totalDistance > NODE_LIST[nearest].totalDistance + pathDistance)
 			{
-				setNodeDistance (childNode, NODE_LIST[nearest].distance + pathDistance);
+				//writeDebugStreamLine("Nearest distance = %d",NODE_LIST[nearest].totalDistance);
+				//writeDebugStreamLine("Path distance = %d",pathDistance);
+				setNodeDistance(childNode, NODE_LIST[nearest].totalDistance + pathDistance);
+				//writeDebugStreamLine("Tried to change node %d distance to %d: (%d)",childNode,NODE_LIST[nearest].totalDistance + pathDistance,NODE_LIST[childNode].totalDistance);
+				//NODE_LIST[childNode].totalDistance = NODE_LIST[nearest].totalDistance + pathDistance;
 				NODE_LIST[childNode].parent = nearest;
 			}
 		}
 		else//unknown
 		{
 			setNodeExplorationFlag(childNode, 0);
-			setNodeDistance (childNode, NODE_LIST[nearest].distance + pathDistance);
+			//writeDebugStreamLine("Nearest distance = %d",NODE_LIST[nearest].totalDistance);
+			//writeDebugStreamLine("Path distance = %d",pathDistance);
+			setNodeDistance(childNode, NODE_LIST[nearest].totalDistance + pathDistance);
+			//writeDebugStreamLine("Tried to change node %d distance to %d: (%d)",childNode,NODE_LIST[nearest].totalDistance + pathDistance,NODE_LIST[childNode].totalDistance);
+			//NODE_LIST[childNode].totalDistance = NODE_LIST[nearest].totalDistance + pathDistance;
 			NODE_LIST[childNode].parent = nearest;
 		}
 
-		if (NODE_LIST[nearest].path1 != NODE_LIST[nearest].path2)
+		if(NODE_LIST[nearest].path1 != NODE_LIST[nearest].path2) // if second path exists, loop again on it
 		{
 			childNode = NODE_LIST[nearest].path2.destination;
-			pathDistance = NODE_LIST[nearest].path2.distance;
+			pathDistance = NODE_LIST[nearest].path2.pathDistanceVar;
 		}
-		else
+		else // no second path, so skip second loop
 		{
 			return;
 		}
@@ -83,40 +93,46 @@ void findChildren(int nearest) //adds child nodes to unexplored list
 
 
 
-void addPath(int source, int destination, int distance) //Function that creates paths between nodes
+void addPath(int source, int destination, int pathDistance,int pathDirection) //Function that creates paths between nodes
 {
-	struct path newPath;
-	newPath.destination = destination;
-	newPath.distance = distance;
+
 	if(NODE_LIST[source].path1 == NODE_LIST[source].path2) // if paths are equal, then neither is used yet
-		NODE_LIST[source].path1 = newPath;
+	{
+		NODE_LIST[source].path1.destination = destination;
+		NODE_LIST[source].path1.pathDistanceVar = pathDistance;
+		NODE_LIST[source].path1.pathDirectionVar = pathDirection;
+	}
 	else
-		NODE_LIST[source].path2 = newPath;
+	{
+		NODE_LIST[source].path2.destination = destination;
+		NODE_LIST[source].path2.pathDistanceVar = pathDistance;
+		NODE_LIST[source].path2.pathDirectionVar = pathDirection;
+	}
 }
 
 void makeMap()
 {
-	addPath(1,62,173);
-	addPath(2,1,127);
-	addPath(2,26,61);
-	addPath(3,2,155);
-	addPath(3,12,28);
-	addPath(4,3,128);
-	addPath(4,13,28);
-	addPath(5,4,88);
-	addPath(5,14,28);
-	addPath(6,5,96);
-	addPath(6,15,28);
-	addPath(7,3,50);
-	addPath(8,4,32);
-	addPath(9,6,50);
-	addPath(10,6,122);
-	addPath(11,26,111);//
-	addPath(12,18,63);
-	addPath(12,28,54);
-	addPath(13,20,44);
-	addPath(13,27,30);
-	addPath(14,22,95);
+	addPath(1,62,173,-1);
+	addPath(2,1,127,0);
+	addPath(2,26,61,-1);
+	addPath(3,2,155,0);
+	addPath(3,12,28,-1);
+	addPath(4,3,128,0);
+	addPath(4,13,28-1);
+	addPath(5,4,88,0);
+	addPath(5,14,28,-1);
+	addPath(6,5,96,0);
+	addPath(6,15,28,-1);
+	addPath(7,3,50,-1);
+	addPath(8,4,32,-1);
+	addPath(9,6,50,-1);
+	addPath(10,6,122,-1);
+	addPath(11,26,111,111);//
+	addPath(12,18,63,-1);
+	addPath(12,28,54,0);
+	addPath(13,20,44,-1);
+	addPath(13,27,30,0);
+	addPath(14,22,95,);
 	addPath(14,30,54);
 	addPath(15,23,62);
 	addPath(15,31,54);
@@ -220,6 +236,31 @@ void makeMap()
 
 }
 
+void debugPrintRoute(int endNode)
+{
+	int current = endNode;
+	int nodeList[NODE_COUNT];
+	int i;
+	for(i = 0; current != 0; i++)
+	{
+		nodeList[i] = current;
+		current = NODE_LIST[current].parent;
+	}
+
+	for(i--;i > 0; i--)
+	{
+		writeDebugStreamLine("go from node %d to node %d", nodeList[i],nodeList[i-1]);
+
+	}
+	writeDebugStreamLine("done");
+	/*
+	for(i=0; i < NODE_COUNT; i++)
+	{
+		writeDebugStreamLine("Distance of node %d is %d",i,NODE_LIST[i].totalDistance);
+	}
+	*/
+}
+
 void findRoute(int startNode,int endNode)
 {
 	// initialize unexplored list with start node
@@ -236,60 +277,54 @@ void findRoute(int startNode,int endNode)
 	setNodeDistance(startNode, 0);
 
 	int debugCount = 0; // count number of nodes explored
-	while (true)
+	while(true)
 	{
 		debugCount++;
+
 		// find nearest unexplored node
 		// use list of distances from start to each node to compare and find nearest
 		int nearest = findNearest();
-		if (nearest == 0)
+		if(nearest == 0)
 		{
 			//find nearest fouldn't find nearest
 			writeDebugStreamLine("dang it! (%d nodes explored)",debugCount);
 			return;
 		}
-		if (nearest == endNode)
+		if(nearest == endNode)
 		{
 			// if it is the end node, then SUCCESS!
 			writeDebugStreamLine("success");
 			return;
 		}
 
-
 		// add its child nodes to the unexplored list, if they are already there, then update their distances if shorter
-
 		findChildren(nearest);
 		setNodeExplorationFlag(nearest, 1);// removes node from unexplored list
 
 	}
 }
 
-void debugPrintRoute(int endNode)
+/*void checkMap()
 {
-	int current = endNode;
-	int nodeList[NODE_COUNT];
-	int i;
-	for (i = 0; current != 0; i++)
+	for(int i=0; i<=NODE_COUNT; i++)
 	{
-		nodeList[i] = current;
-		current = NODE_LIST[current].parent;
-	}
-
-	for(i--;i > 0; i--)
-	{
-		writeDebugStreamLine("go from node %d to node %d", nodeList[i],nodeList[i-1]);
-
-	}
-	writeDebugStreamLine("done");
-	for(i=0; i < NODE_COUNT; i++)
-	{
-		writeDebugStreamLine("Distance of node %d is %d",i,NODE_LIST[i].distance);
+		writeDebugStreamLine("Checking node %d:",i);
+		writeDebugStreamLine("\ttotalDistance = %d",NODE_LIST[i].totalDistance);
+		writeDebugStreamLine("\texplorationFlag = %d",NODE_LIST[i].explorationFlag);
+		writeDebugStreamLine("\tPath1:");
+		writeDebugStreamLine("\t\tdestination = %d",NODE_LIST[i].path1.destination);
+		writeDebugStreamLine("\t\tpathDistanceVar = %d",NODE_LIST[i].path1.pathDistanceVar);
+		writeDebugStreamLine("\tPath2:");
+		writeDebugStreamLine("\t\tdestination = %d",NODE_LIST[i].path2.destination);
+		writeDebugStreamLine("\t\tpathDistanceVar = %d",NODE_LIST[i].path2.pathDistanceVar);
+		writeDebugStreamLine("");
 	}
 }
-
+*/
 task main()
 {
 	makeMap();
-	findRoute (1, 10);
+	//checkMap();
+	findRoute(1, 10);
 	debugPrintRoute(10);
 }
