@@ -60,22 +60,18 @@ void findChildren(int nearest) //adds child nodes to unexplored list
 		{
 			if(NODE_LIST[childNode].totalDistance > NODE_LIST[nearest].totalDistance + pathDistance)
 			{
-				//writeDebugStreamLine("Nearest distance = %d",NODE_LIST[nearest].totalDistance);
-				//writeDebugStreamLine("Path distance = %d",pathDistance);
+
 				setNodeDistance(childNode, NODE_LIST[nearest].totalDistance + pathDistance);
-				//writeDebugStreamLine("Tried to change node %d distance to %d: (%d)",childNode,NODE_LIST[nearest].totalDistance + pathDistance,NODE_LIST[childNode].totalDistance);
-				//NODE_LIST[childNode].totalDistance = NODE_LIST[nearest].totalDistance + pathDistance;
+
 				NODE_LIST[childNode].parent = nearest;
 			}
 		}
 		else//unknown
 		{
 			setNodeExplorationFlag(childNode, 0);
-			//writeDebugStreamLine("Nearest distance = %d",NODE_LIST[nearest].totalDistance);
-			//writeDebugStreamLine("Path distance = %d",pathDistance);
+
 			setNodeDistance(childNode, NODE_LIST[nearest].totalDistance + pathDistance);
-			//writeDebugStreamLine("Tried to change node %d distance to %d: (%d)",childNode,NODE_LIST[nearest].totalDistance + pathDistance,NODE_LIST[childNode].totalDistance);
-			//NODE_LIST[childNode].totalDistance = NODE_LIST[nearest].totalDistance + pathDistance;
+
 			NODE_LIST[childNode].parent = nearest;
 		}
 
@@ -118,7 +114,7 @@ void makeMap()
 	addPath(3,2,155,0);
 	addPath(3,12,28,-1);
 	addPath(4,3,128,0);
-	addPath(4,13,28-1);
+	addPath(4,13,28,-1);
 	addPath(5,4,88,0);
 	addPath(5,14,28,-1);
 	addPath(6,5,96,0);
@@ -132,107 +128,107 @@ void makeMap()
 	addPath(12,28,54,0);
 	addPath(13,20,44,-1);
 	addPath(13,27,30,0);
-	addPath(14,22,95,);
-	addPath(14,30,54);
-	addPath(15,23,62);
-	addPath(15,31,54);
-	addPath(16,11,111);//
-	addPath(16,17,111);//
-	addPath(17,18,63);
-	addPath(17,28,54);
-	addPath(18,7,28);
-	addPath(18,19,63);
-	addPath(19,20,44);
-	addPath(19,27,30);
-	addPath(20,8,28);
-	addPath(20,21,44);
-	addPath(21,22,95);
-	addPath(21,30,54);
-	addPath(22,23,62);
-	addPath(22,31,54);
-	addPath(23,9,30);
-	addPath(24,7,28);
-	addPath(24,19,63);
-	addPath(25,9,30);
-	addPath(26,41,42);
-	addPath(26,16,111);//
-	addPath(27,29,111);//
-	addPath(28,32,64);
-	addPath(28,43,44);
-	addPath(29,34,111);//
-	addPath(29,40,111);//
-	addPath(30,35,64);
-	addPath(30,45,43);
-	addPath(31,37,41);
-	addPath(31,46,48);
-	addPath(32,42,44);
-	addPath(33,32,64);
-	addPath(33,43,44);
-	addPath(34,24,54);
-	addPath(34,33,62);
-	addPath(35,29,111);//
-	addPath(36,35,64);
-	addPath(36,45,43);
-	addPath(37,36,53);
-	addPath(38,24,54);
-	addPath(38,33,62);
-	addPath(39,36,53);
-	addPath(40,29,111);//
-	addPath(40,44,111);//
-	addPath(41,39,60);
-	addPath(41,47,158);
-	addPath(42,47,52);
-	addPath(43,48,62);
-	addPath(43,63,44);
-	addPath(44,50,88);
-	addPath(44,64,44);
-	addPath(45,51,53);
-	addPath(45,65,44);
-	addPath(46,53,67);
-	addPath(46,66,44);
-	addPath(47,63,44);
-	addPath(47,48,62);
-	addPath(48,38,44);
-	addPath(48,49,63);
-	addPath(49,64,44);
-	addPath(49,50,88);
-	addPath(50,65,44);
-	addPath(50,51,53);
-	addPath(51,39,44);
-	addPath(51,52,40);
-	addPath(52,66,44);
-	addPath(52,53,67);
-	addPath(53,25,98);
-	addPath(53,54,53);
-	addPath(54,10,128);
-	addPath(55,38,44);
-	addPath(55,49,63);
-	addPath(56,50,31);
-	addPath(57,39,43);
-	addPath(57,52,40);
-	addPath(58,25,98);
-	addPath(58,54,53);
-	addPath(59,10,128);
-	addPath(60,74,111);//
-	addPath(61,74,111);//
-	addPath(62,67,88);
-	addPath(74,69,184); //accidently named two different intersections 62. fixed by changing one to 74
-	addPath(63,69,50);
-	addPath(64,70,31);
-	addPath(65,71,41);
-	addPath(66,72,55);
-	addPath(67,61,111);//
-	addPath(67,68,71);
-	addPath(68,69,184);
-	addPath(69,55,44);
-	addPath(69,70,108);
-	addPath(70,56,44);
-	addPath(70,71,98);
-	addPath(71,57,44);
-	addPath(71,72,109);
-	addPath(72,58,44);
-	addPath(72,73,53);
-	addPath(73,59,44);
+	addPath(14,22,95,-1);
+	addPath(14,30,54,0);
+	addPath(15,23,62,-1);
+	addPath(15,31,54,0);
+	addPath(16,11,111,0);//
+	addPath(16,17,111,1);//
+	addPath(17,18,63,0);
+	addPath(17,28,54,1);
+	addPath(18,7,28,-1);
+	addPath(18,19,63,0);
+	addPath(19,20,44,0);
+	addPath(19,27,30,1);
+	addPath(20,8,28,-1);
+	addPath(20,21,44,0);
+	addPath(21,22,95,0);
+	addPath(21,30,54,1);
+	addPath(22,23,62,0);
+	addPath(22,31,54,1);
+	addPath(23,9,30,-1);
+	addPath(24,7,28,0);
+	addPath(24,19,63,1);
+	addPath(25,9,30,0);
+	addPath(26,41,42,0);
+	addPath(26,16,111,-1);//
+	addPath(27,29,111,1);//
+	addPath(28,32,64,1);
+	addPath(28,43,44,0);
+	addPath(29,34,111,1);//
+	addPath(29,40,111,0);//
+	addPath(30,35,64,1);
+	addPath(30,45,43,0);
+	addPath(31,37,41,1);
+	addPath(31,46,48,0);
+	addPath(32,42,44,-1);
+	addPath(33,32,64,0);
+	addPath(33,43,44,-1);
+	addPath(34,24,54,1);
+	addPath(34,33,62,0);
+	addPath(35,29,111,1);//
+	addPath(36,35,64,0);
+	addPath(36,45,43,-1);
+	addPath(37,36,53,0);
+	addPath(38,24,54,0);
+	addPath(38,33,62,-1);
+	addPath(39,36,53,-1);
+	addPath(40,29,111,0);//
+	addPath(40,44,111,1);//
+	addPath(41,60,39,0);
+	addPath(41,47,158,-1);
+	addPath(42,47,52,-1);
+	addPath(43,48,62,-1);
+	addPath(43,63,44,0);
+	addPath(44,50,88,-1);
+	addPath(44,64,44,0);
+	addPath(45,51,53,-1);
+	addPath(45,65,44,0);
+	addPath(46,53,67,-1);
+	addPath(46,66,44,0);
+	addPath(47,63,44,1);
+	addPath(47,48,62,0);
+	addPath(48,38,44,-1);
+	addPath(48,49,63,0);
+	addPath(49,64,44,1);
+	addPath(49,50,88,0);
+	addPath(50,65,44,1);
+	addPath(50,51,53,0);
+	addPath(51,39,44,-1);
+	addPath(51,52,40,0);
+	addPath(52,66,44,1);
+	addPath(52,53,67,0);
+	addPath(53,25,98,-1);
+	addPath(53,54,53,0);
+	addPath(54,10,128,-1);
+	addPath(55,38,44,0);
+	addPath(55,49,63,1);
+	addPath(56,50,31,1);
+	addPath(57,39,43,0);
+	addPath(57,52,40,1);
+	addPath(58,25,98,0);
+	addPath(58,54,53,1);
+	addPath(59,10,128,0);
+	addPath(60,74,111,-1);//
+	addPath(61,74,111,0);//
+	addPath(62,67,88,-1);
+	addPath(74,69,184,-1); //accidently named two different intersections 62. fixed by changing one to 74
+	addPath(63,69,50,-1);
+	addPath(64,70,31,-1);
+	addPath(65,71,41,-1);
+	addPath(66,72,55,-1);
+	addPath(67,61,111,-1);//
+	addPath(67,68,71,0);
+	addPath(68,69,184,0);
+	addPath(69,55,44,-1);
+	addPath(69,70,108,0);
+	addPath(70,56,44,-1);
+	addPath(70,71,98,0);
+	addPath(71,57,44,-1);
+	addPath(71,72,109,0);
+	addPath(72,58,44,-1);
+	addPath(72,73,53,0);
+	addPath(73,59,44,-1);
 
 }
 
@@ -249,16 +245,28 @@ void debugPrintRoute(int endNode)
 
 	for(i--;i > 0; i--)
 	{
-		writeDebugStreamLine("go from node %d to node %d", nodeList[i],nodeList[i-1]);
+		int dir;
+		string dirStr;
 
+		if(NODE_LIST[nodeList[i]].path1.destination == nodeList[i-1])
+		{
+			dir = NODE_LIST[nodeList[i]].path1.pathDirectionVar;
+		}
+		else
+		{
+			dir = NODE_LIST[nodeList[i]].path2.pathDirectionVar;
+		}
+
+		if(dir == -1)
+			dirStr = "Turn left";
+		else if(dir == 1)
+			dirStr = "Turn right";
+		else
+			dirStr = "Go straight";
+
+		writeDebugStreamLine("%s from node %d to node %d", dirStr, nodeList[i],nodeList[i-1]);
 	}
 	writeDebugStreamLine("done");
-	/*
-	for(i=0; i < NODE_COUNT; i++)
-	{
-		writeDebugStreamLine("Distance of node %d is %d",i,NODE_LIST[i].totalDistance);
-	}
-	*/
 }
 
 void findRoute(int startNode,int endNode)
